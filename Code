@@ -1,0 +1,50 @@
+pragma solidity ^0.4.25;
+
+// ERC20 Customize Token Smart Contract
+contract thaiToken {
+
+    string public constant name = "thaiToken";
+    string public constant symbol = "thai";
+    uint8 public constant decimals = 18;
+    uint public _intialSupply = 30000000;
+    
+    address public Owner = 0xca35b7d915458ef540ade6068dfe2f44e8fa733c;
+
+
+//Functions with this modifier can only be executed by the owner
+   modifier onlyOwner() {
+   if (msg.sender != Owner) {
+   revert();
+      }
+    _;
+   }
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Share release operations
+    ////////////////////////////////////////////////////////////////////////////
+    
+    address[] public holderAccts;
+    
+    event Transfer(address indexed _to,  uint256 _value);
+    
+    function setHolder(address _address)  public {
+            holderAccts.push(_address) -1 ;
+    }
+
+    function getHolders() view public returns(address[]) {
+        return holderAccts;
+    }
+
+    function countHolders() view public returns (uint256) {
+        return holderAccts.length;
+    }
+
+   function releaseHolderShares()  onlyOwner() public returns (uint256) {
+       uint256 numberOfAccts =  holderAccts.length;
+       uint256 supplyDiv = _intialSupply /numberOfAccts;
+      
+        for (uint i = 0; i < numberOfAccts; i ++) {
+           emit Transfer(holderAccts[i], supplyDiv);
+        }
+    }
+}
